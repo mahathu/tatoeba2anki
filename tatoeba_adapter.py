@@ -3,8 +3,9 @@ import requests
 
 # TODO switch from API to using their database export
 # TODO add toggle for direct translations only
+# TODO: instead of hardcoding the function arguments, use **kwargs and just pass everything to tatoeba
 def get_translations(
-    query, lang_from, lang_to, find_similar, max_results=10, max_sentence_len=60
+    query, lang_from, lang_to, find_similar, max_results=5, max_sentence_len=60
 ):
     page = 1
     translations = []
@@ -23,17 +24,18 @@ def get_translations(
         for sentence in sentences:
             sentence_translations = get_translations_for_sentence(sentence, lang_to)
 
+            # this shouldn't happen if the API only returns sentences that
+            # have translations in the target language
             if not sentence_translations:
-                # TODO: this happens a lot for common words translated into uncommon languages,
-                # needs urgent fixing i.e. change API to only return sentences with translations
-                print(f"no translation for {sentence['text']} in {lang_to}")
-                continue
+                raise RuntimeError(
+                    f"no translation for {sentence['text']} in {lang_to}"
+                )
 
             translations.append(
                 {
                     "author": sentence["user"]["username"],
                     "original": sentence["text"],
-                    "translation": sentence_translations[0]["text"],
+                    "translations": sentence_translations,
                 }
             )
 
@@ -48,22 +50,23 @@ def search_tatoeba(query, lang_from, lang_to, page):
     BASE_PARAMS = {
         "query": query,
         "from": lang_from,
-        "trans_to": lang_to,
+        "to": lang_to,
         "sort": "relevance",
         "orphans": "no",
         "trans_filter": "limit",
-        "trans_link": "direct",
+        # "trans_link": "direct",
         "trans_unapproved": "no",
         "unapproved": "no",
         "page": page,
     }
     response = requests.get(BASE_URL, params=BASE_PARAMS)
+    print(response.url)
     return response.json()
 
 
 def get_translations_for_sentence(sentence, lang_to):
     return [
-        translation
+        translation["text"]
         for translation_list in sentence["translations"]
         for translation in translation_list
         if translation["lang"] == lang_to  # and "isDirect" in translation

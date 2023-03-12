@@ -7,7 +7,6 @@ from flask import (
     send_from_directory,
 )
 from tatoeba_adapter import get_translations
-from time import sleep
 
 app = Flask(__name__)
 
@@ -25,7 +24,7 @@ def static_files(path):
 
 
 @app.route("/api/v0/translations", methods=["GET"])
-def api():
+def api_v0():
     if any([kw not in request.args for kw in ["query", "lang_from", "lang_to"]]):
         return "Invalid arguments", 400
 
@@ -35,3 +34,9 @@ def api():
         lang_to=request.args["lang_to"],
         find_similar=request.args["find_similar"] == "true",
     )
+
+
+# TODO: instead of making api calls, download database export and make calls there
+@app.route("/api/v1/translations", methods=["GET"])
+def api_v1():
+    raise NotImplementedError
