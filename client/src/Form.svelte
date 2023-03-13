@@ -1,11 +1,11 @@
 <script>
-    import { createEventDispatcher } from "svelte";
+    import { createEventDispatcher, onMount } from "svelte";
     import { TranslatedSentence } from "./TranslatedSentence.js";
-    let lang_from = "tur";
-    let lang_to = "deu";
+    let lang_from = "deu";
+    let lang_to = "tur";
     let find_similar = true;
 
-    let placeholder_words = ["git"]; //["yürüyerek"]; //, "benim", "seni", "git"];
+    let placeholder_words = ["wegen"]; //["yürüyerek"]; //, "benim", "seni", "git"];
     let textInput = placeholder_words.join("\n");
 
     let langs = [
@@ -21,6 +21,9 @@
         { code: "tur", name: "Turkish" },
         { code: "pes", name: "Persian" },
     ];
+
+    /* only for faster prototyping: */
+    onMount(handleSubmit);
 
     const dispatch = createEventDispatcher();
 
@@ -47,6 +50,7 @@
         dispatch("translations", translations);
     }
 
+    /* TODO: move this into an external function */
     async function getSentencesForPhrase(
         query,
         lang_from,

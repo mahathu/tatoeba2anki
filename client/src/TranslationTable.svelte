@@ -3,15 +3,16 @@
 
     import TranslationTableRow from "./TranslationTableRow.svelte";
 
-    let toggleCheckAllButtonLabel = "unselect all";
-    // TODO: this does not work
-    // function toggleCheckAll() {
-    //     translatedSentences.forEach((sentence) => {
-    //         sentence.isIncludedInBundle = false;
-    //         sentence = sentence;
-    //     });
-    //     // toggleCheckAllButtonLabel = "unselect all";
-    // }
+    let allSentencesSelected = true;
+
+    function toggleSelection() {
+        allSentencesSelected = !allSentencesSelected;
+        console.log("toggleselct called");
+        translatedSentences.forEach((sentence) => {
+            sentence.selected = allSentencesSelected;
+        });
+        translatedSentences = translatedSentences; // Trigger reactivity
+    }
 </script>
 
 <!-- TODO:
@@ -20,13 +21,15 @@
 	-->
 
 {#if translatedSentences.length > 0}
-    <div class="table-buttons">
-        <!-- svelte-ignore a11y-invalid-attribute -->
-        <!-- <a href="#" on:click={toggleCheckAll}>{toggleCheckAllButtonLabel}</a> -->
+    <div class="translation-table-actions">
+        <button class="clear" on:click={toggleSelection}
+            >{allSentencesSelected ? "un" : ""}select all</button
+        >
     </div>
     <table>
         <tr>
-            <th>Original author</th>
+            <!-- svelte-ignore a11y-missing-attribute -->
+            <th>Original author <a>(hide)</a></th>
             <th>Sentence</th>
             <th>Translation</th>
             <th><!--✅--></th>
@@ -44,7 +47,7 @@
         border-spacing: 1px 2px;
         width: 100%;
     }
-    .table-buttons {
+    .translation-table-actions {
         display: flex;
         justify-content: flex-end;
     }

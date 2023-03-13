@@ -4,12 +4,19 @@
 </script>
 
 <tr
-    class={sentence.isIncludedInBundle ? "" : "deactivated"}
+    class={sentence.selected ? "" : "deactivated"}
     on:click={(e) => {
-        sentence.isIncludedInBundle = !sentence.isIncludedInBundle;
+        sentence.selected = !sentence.selected;
     }}
 >
-    <td>{sentence.author}</td>
+    <td
+        ><a
+            href="https://tatoeba.org/en/user/profile/{sentence.author}"
+            target="_blank"
+            rel="noreferrer"
+            on:click|stopPropagation>{sentence.author}</a
+        ></td
+    >
     <td>{sentence.original_sentence}</td>
 
     {#if sentence.translations.length > 1}
@@ -27,26 +34,23 @@
     {/if}
 
     <td>
-        <input
-            type="checkbox"
-            id="t-{i}"
-            bind:checked={sentence.isIncludedInBundle}
-        />
+        <input type="checkbox" id="t-{i}" bind:checked={sentence.selected} />
     </td>
 </tr>
 
 <style>
     tr {
         transition: background-color 75ms ease;
-        background-color: hsl(0, 0%, 97%);
+        background-color: hsl(0, 0%, 99%);
+        cursor: pointer;
     }
     tr:nth-child(even) {
-        background-color: hsl(0, 0%, 92%);
+        background-color: hsl(0, 0%, 94%);
     }
 
     tr:hover {
         /* 5% darker */
-        background-color: hsl(0, 0%, 87%);
+        background-color: hsl(0, 0%, 89%);
     }
 
     tr.deactivated {
@@ -60,6 +64,7 @@
     td:last-child {
         text-align: center;
         vertical-align: middle;
+        padding: 0 2px;
     }
 
     td select {

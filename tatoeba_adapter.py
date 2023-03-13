@@ -5,7 +5,7 @@ import requests
 # TODO add toggle for direct translations only
 # TODO: instead of hardcoding the function arguments, use **kwargs and just pass everything to tatoeba
 def get_translations(
-    query, lang_from, lang_to, find_similar, max_results=5, max_sentence_len=60
+    query, lang_from, lang_to, find_similar, max_results=10, max_sentence_len=60
 ):
     page = 1
     translations = []

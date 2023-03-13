@@ -5,7 +5,7 @@ export class TranslatedSentence {
     author;
     original_sentence;
     translations;
-    isIncludedInBundle;
+    selected;
 
     constructor(query, lang_from, lang_to, author, original_sentence, translations) {
         this.query = query;
@@ -15,7 +15,7 @@ export class TranslatedSentence {
         this.original_sentence = original_sentence;
         this.translations = translations;
 
-        this.isIncludedInBundle = true;
+        this.selected = true;
 
         console.log(`Created TranslatedSentence: ${this}`);
     }
