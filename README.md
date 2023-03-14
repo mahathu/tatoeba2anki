@@ -1,1 +1,6 @@
-...made possible by the volunteer contributers of the tatoeba community.
+Installation
+```
+cd client && npm build
+cd ..
+flask run
+```

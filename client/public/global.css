@@ -15,7 +15,7 @@ body {
 }
 
 .github-fork-ribbon:before {
-	background-color: var(--link-color);
+	background-color: #f80;
 }
 
 a {
@@ -45,7 +45,7 @@ textarea {
 	font-size: inherit;
 	-webkit-padding: 0.4em 0;
 	padding: 0.4em;
-	margin: 0 0 0.9em 0;
+	margin: 0 0 1em 0;
 	box-sizing: border-box;
 	border: 1px solid #ccc;
 	border-radius: 2px;
@@ -62,8 +62,13 @@ button {
 	cursor: pointer;
 }
 
+/* button:not(.clear) {
+	text-transform: capitalize;
+} */
+
 button:disabled {
 	color: #999;
+	cursor: default;
 }
 
 button:not(:disabled):active {
@@ -76,9 +81,14 @@ button:focus {
 
 button.clear {
 	border: none;
+	border-radius: 0;
 	background: transparent;
 	padding: 0;
 	color: var(--link-color);
 	text-decoration: underline;
 	text-underline-offset: 2px;
+}
+
+button.danger {
+	color: #BD2C50;
 }

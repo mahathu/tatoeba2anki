@@ -2,11 +2,14 @@
 	import Form from "./Form.svelte";
 	import TranslationTable from "./TranslationTable.svelte";
 	import Spinner from "./Spinner.svelte";
+	import ExportActionRow from "./ExportActionRow.svelte";
+
+	let currentlyFetching = false;
 	let translatedSentences = [];
 
-	function handleTranslations(event) {
-		console.log(event.detail);
-		translatedSentences = event.detail;
+	function appendTranslations(event) {
+		let newTranslations = event.detail;
+		translatedSentences = [...translatedSentences, ...newTranslations];
 	}
 </script>
 
@@ -18,12 +21,35 @@
 		spaced repetition tools.
 	</p>
 
-	<Form on:translations={handleTranslations} />
-	{#await handleTranslations}
+	<Form
+		on:startedFetching={(e) => {
+			currentlyFetching = true;
+			translatedSentences = [];
+		}}
+		on:translations={appendTranslations}
+		on:doneFetching={(e) => {
+			currentlyFetching = false;
+		}}
+		{currentlyFetching}
+	/>
+
+	{#if translatedSentences.length > 0}
+		<TranslationTable
+			{translatedSentences}
+			{currentlyFetching}
+			on:stopFetching={(e) => {
+				currentlyFetching = false;
+			}}
+		/>
+	{/if}
+
+	{#if currentlyFetching}
 		<Spinner />
-	{:then}
-		<TranslationTable {translatedSentences} />
-	{/await}
+	{/if}
+
+	{#if translatedSentences.length > 0 && !currentlyFetching}
+		<ExportActionRow {translatedSentences} />
+	{/if}
 </main>
 
 <style>

@@ -1,6 +1,5 @@
 <script>
-    export let sentence;
-    export let i;
+    export let sentence, i;
 </script>
 
 <tr
@@ -41,11 +40,10 @@
 <style>
     tr {
         transition: background-color 75ms ease;
-        background-color: hsl(0, 0%, 99%);
         cursor: pointer;
     }
     tr:nth-child(even) {
-        background-color: hsl(0, 0%, 94%);
+        background-color: hsl(0, 0%, 95%);
     }
 
     tr:hover {

@@ -1,11 +1,14 @@
 <script>
     import { createEventDispatcher, onMount } from "svelte";
-    import { TranslatedSentence } from "./TranslatedSentence.js";
-    let lang_from = "deu";
-    let lang_to = "tur";
+    import { getSentencesForPhrase, getQueriesFromString } from "./util";
+
+    export let currentlyFetching;
+
+    let lang_from = "tur";
+    let lang_to = "deu";
     let find_similar = true;
 
-    let placeholder_words = ["wegen"]; //["yürüyerek"]; //, "benim", "seni", "git"];
+    let placeholder_words = ["yürüyerek"];
     let textInput = placeholder_words.join("\n");
 
     let langs = [
@@ -28,66 +31,32 @@
     const dispatch = createEventDispatcher();
 
     async function handleSubmit() {
+        dispatch("startedFetching");
+        currentlyFetching = true;
         // Split the text input by lines
-        let phrases = textInput.split(/\r?\n/);
+        let phrases = getQueriesFromString(textInput);
 
-        // Remove all characters that aren't letters or whitespace, and filter empty lines:
-        phrases = phrases
-            .map((p) => p.replace(/[^\p{L}\s]|_/gu, "").trim())
-            .filter(Boolean);
-
-        let translations = [];
         for (let phrase of phrases) {
+            if (!currentlyFetching) {
+                console.log("currentlyFetching is false");
+                return;
+            }
+
             const search_results = await getSentencesForPhrase(
                 phrase,
                 lang_from,
                 lang_to,
                 find_similar
             );
-            translations.push(...search_results);
+            dispatch("translations", search_results);
         }
-        console.log(translations);
-        dispatch("translations", translations);
-    }
 
-    /* TODO: move this into an external function */
-    async function getSentencesForPhrase(
-        query,
-        lang_from,
-        lang_to,
-        find_similar
-    ) {
-        const URL_PARAMS = new URLSearchParams({
-            query: query,
-            lang_from: lang_from,
-            lang_to: lang_to,
-            find_similar: find_similar,
-        });
-
-        const API_URL = `./api/v0/translations?${URL_PARAMS.toString()}`;
-
-        let response = await fetch(API_URL);
-        response = await response.json();
-
-        let translations = response.map((r) => {
-            return new TranslatedSentence(
-                query,
-                lang_from,
-                lang_to,
-                r.author,
-                r.original,
-                r.translations
-            );
-        });
-
-        return translations;
+        dispatch("doneFetching");
     }
 </script>
 
 <form class="form-wrapper" on:submit|preventDefault={handleSubmit}>
     <div class="form-l">
-        <!-- TODO: turn the language inputs into autocomplete/typeahead
-    fields: https://github.com/pstanoev/simple-svelte-autocomplete -->
         <label for="langFromSelect"><br />Source language:</label>
         <select id="langFromSelect" bind:value={lang_from}>
             {#each langs as language}
@@ -108,7 +77,9 @@
             terms
         </label>
 
-        <button type="submit">Click me.</button>
+        <button type="submit" disabled={currentlyFetching}
+            >Find example sentences</button
+        >
     </div>
     <div class="form-r">
         <label for="knownWordsInput"

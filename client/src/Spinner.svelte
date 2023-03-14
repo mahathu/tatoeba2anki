@@ -1,13 +1,19 @@
-<div class="spinner" />
+<div class="spinner-wrapper">
+    <div class="spinner" />
+</div>
 
 <style>
+    .spinner-wrapper {
+        display: flex;
+        justify-content: space-around;
+    }
     .spinner {
         width: 50px;
         height: 50px;
         border-radius: 50%;
-        border: 5px solid rgba(0, 0, 0, 0.1);
-        border-top-color: #000;
-        animation: spin 1s ease-in-out infinite;
+        border: 3px solid hsl(0, 0%, 89%);
+        border-top-color: var(--link-color);
+        animation: spin 1s cubic-bezier(0.34, 0, 0.45, 1) infinite;
     }
 
     @keyframes spin {
