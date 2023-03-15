@@ -1,23 +1,17 @@
 <script>
+    import { createEventDispatcher } from "svelte";
+    import TranslationTableRow from "./TranslationTableRow.svelte";
+
     export let translatedSentences, currentlyFetching;
     $: nSelectedSentences = translatedSentences.filter(
         (s) => s.selected
     ).length;
-    /* TODO: nSelectedSentences needs to be refreshed when
-    a sentence is (un)selected -> maybe through a dispatch? */
-
-    import { createEventDispatcher } from "svelte";
-    import TranslationTableRow from "./TranslationTableRow.svelte";
 
     let allSentencesSelected = true;
 
     const dispatch = createEventDispatcher();
 
-    function stopFetching() {
-        dispatch("stopFetching");
-    }
-
-    function toggleSelection() {
+    function toggleAll() {
         allSentencesSelected = !allSentencesSelected;
         translatedSentences.forEach((sentence) => {
             sentence.selected = allSentencesSelected;
@@ -34,29 +28,37 @@
 {#if translatedSentences.length > 0}
     <div class="translation-table-actions">
         <span>
-            {translatedSentences.length} results found {nSelectedSentences}
+            {translatedSentences.length} results found
             {#if nSelectedSentences < translatedSentences.length}({nSelectedSentences}
                 selected)
             {/if}
         </span>
         {#if currentlyFetching}
-            <button class="clear danger" on:click={stopFetching}
-                >stop fetching</button
+            <button
+                class="clear danger"
+                on:click={(e) => {
+                    dispatch("stopFetching");
+                }}>stop fetching</button
             >
         {/if}
-        <button class="clear" on:click={toggleSelection}
+        <button class="clear" on:click={toggleAll}
             >{allSentencesSelected ? "un" : ""}select all</button
         >
     </div>
     <table>
         <tr>
+            <th><!--✅--></th>
             <th>Original author</th>
             <th>Sentence</th>
             <th>Translation</th>
-            <th><!--✅--></th>
         </tr>
-        {#each translatedSentences as sentence, i}
-            <TranslationTableRow {sentence} {i} />
+        {#each translatedSentences as sentence}
+            <TranslationTableRow
+                {sentence}
+                on:updateSentenceArray={(e) => {
+                    translatedSentences = translatedSentences;
+                }}
+            />
         {/each}
     </table>
 {/if}

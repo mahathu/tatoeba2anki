@@ -33,21 +33,22 @@
     async function handleSubmit() {
         dispatch("startedFetching");
         currentlyFetching = true;
+
         // Split the text input by lines
         let phrases = getQueriesFromString(textInput);
 
         for (let phrase of phrases) {
-            if (!currentlyFetching) {
-                console.log("currentlyFetching is false");
-                return;
-            }
-
             const search_results = await getSentencesForPhrase(
                 phrase,
                 lang_from,
                 lang_to,
                 find_similar
             );
+
+            if (!currentlyFetching) {
+                return;
+            }
+
             dispatch("translations", search_results);
         }
 
@@ -70,11 +71,13 @@
                 <option value={language.code}>{language.name}</option>
             {/each}
         </select>
-        <label>
+        <label class="flex find-similar-label">
             <input type="checkbox" bind:checked={find_similar} />
-            Find similar words by
-            <a href="https://en.wikipedia.org/wiki/Stemming">stemming</a> search
-            terms
+            <span
+                >Find similar words by
+                <a href="https://en.wikipedia.org/wiki/Stemming">stemming</a> search
+                terms</span
+            >
         </label>
 
         <button type="submit" disabled={currentlyFetching}
@@ -114,6 +117,11 @@
     .form-r textarea {
         flex-grow: 1;
     }
+
+    .find-similar-label input[type="checkbox"] {
+        margin-right: 0.5em;
+    }
+
     @media screen and (max-width: 500px) {
         form {
             /* background: lightskyblue; */

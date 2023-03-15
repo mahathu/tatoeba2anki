@@ -1,13 +1,20 @@
 <script>
-    export let sentence, i;
+    import { createEventDispatcher } from "svelte";
+
+    export let sentence;
+
+    const dispatch = createEventDispatcher();
+
+    function handleClick(event) {
+        sentence.selected = !sentence.selected;
+        dispatch("updateSentenceArray");
+    }
 </script>
 
-<tr
-    class={sentence.selected ? "" : "deactivated"}
-    on:click={(e) => {
-        sentence.selected = !sentence.selected;
-    }}
->
+<tr class={sentence.selected ? "" : "deactivated"} on:click={handleClick}>
+    <td>
+        <input type="checkbox" checked={sentence.selected} />
+    </td>
     <td
         ><a
             href="https://tatoeba.org/en/user/profile/{sentence.author}"
@@ -31,10 +38,6 @@
     {:else}
         <td>{sentence.translations[0]}</td>
     {/if}
-
-    <td>
-        <input type="checkbox" id="t-{i}" bind:checked={sentence.selected} />
-    </td>
 </tr>
 
 <style>
@@ -52,17 +55,23 @@
     }
 
     tr.deactivated {
-        opacity: 0.125;
+        color: rgba(51, 51, 51, 0.75);
     }
 
-    td:not(:last-child) {
+    td:not(:first-child) {
         padding: 4px 7px;
     }
 
-    td:last-child {
+    td:first-child {
         text-align: center;
         vertical-align: middle;
-        padding: 0 2px;
+        padding: 0 6px;
+    }
+
+    td input[type="checkbox"] {
+        --checkbox-size: 1.25em;
+        width: var(--checkbox-size);
+        height: var(--checkbox-size);
     }
 
     td select {
